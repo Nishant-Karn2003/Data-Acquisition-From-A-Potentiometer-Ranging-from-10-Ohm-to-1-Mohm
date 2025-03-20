@@ -1,0 +1,60 @@
+int analogPin = A1;       
+int rawValue = 0;         
+float Vin = 4.98;         
+float Vout = 0;           
+float Rfixed = 10000.0;   
+float Rpot = 0;           
+
+int ledOhm = 2;           
+int ledKOhm = 7;          
+int ledMOhm = 8;         
+void setup() {
+  Serial.begin(9600);     
+  pinMode(ledOhm, OUTPUT); 
+  pinMode(ledKOhm, OUTPUT);
+  pinMode(ledMOhm, OUTPUT);
+}
+
+void loop() {
+
+  rawValue = analogRead(analogPin);
+
+
+  Vout = (rawValue * Vin) / 1023.0;
+
+ 
+  if (Vout != 0 && Vout < Vin) {  
+    Rpot = ((Rfixed * Vout) / (Vin - Vout)) * 10;
+  } else {
+    Rpot = 0; 
+  }
+
+  
+  Serial.print("");
+  if (Rpot < 1000) {
+    Serial.print(Rpot);     
+    Serial.println(" Ohms");
+
+    digitalWrite(ledOhm, HIGH);
+    digitalWrite(ledKOhm, LOW);
+    digitalWrite(ledMOhm, LOW);
+  } 
+  else if (Rpot < 1000000) {
+    Serial.print(Rpot / 1000); 
+    Serial.println(" kOhm");
+
+    digitalWrite(ledOhm, LOW);
+    digitalWrite(ledKOhm, HIGH);
+    digitalWrite(ledMOhm, LOW);
+  } 
+  else {
+    Serial.print(Rpot / 1000000);  
+    Serial.println(" MOhm");
+
+    digitalWrite(ledOhm, LOW);
+    digitalWrite(ledKOhm, LOW);
+    digitalWrite(ledMOhm, HIGH);
+  }
+
+  delay(500);  // Delay before the next reading
+}
